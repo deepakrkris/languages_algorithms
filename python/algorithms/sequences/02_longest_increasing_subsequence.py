@@ -28,22 +28,19 @@ Constraints:
 
 def longest_increasing_subsequence(sequence) :
 
-    dp = [ ]
+    dp = [ 0 for _ in range(len(sequence)) ]
 
-    for num in sequence :
-   
-        longest_seq_until_i = [ num ]
+    for sub_seq_end in range(1, len(sequence)) :
 
-        for seq in dp :
-            if seq[-1] < num :
-                new_seq = seq +  [ num ]
+        max_seq = 1
 
-                if len(longest_seq_until_i) < len(new_seq) :
-                    longest_seq_until_i = new_seq
+        for previous_seq_end in range(sub_seq_end) :
+            if sequence[sub_seq_end] > sequence[previous_seq_end] :
+                max_seq = max(max_seq , dp[previous_seq_end] + 1)
+        
+        dp[sub_seq_end] = max_seq
 
-        dp.append(longest_seq_until_i)
-
-    return max([ len(s) for s in dp ])
+    return max(dp)
 
 def main():
     test_data = [ [7, 12, 3, 8, 9, 4, 5, 6 ] , [ 6 , 4 , 8 , 5 , 7 ] ]
