@@ -23,20 +23,11 @@ Constraints:
 
 def longest_increasing_subsequence(sequence) :
 
-    def check_increase_seq(max_so_far , index) :
-        if index == len(sequence) :
-            return 0
+    dp = [ [] ]
 
-        max_seq_len = 0
+    # dp solution
 
-        if max_so_far is None or sequence[index] > max_so_far :
-            max_seq_len = check_increase_seq(sequence[index], index + 1) + 1
-
-        max_seq_len = max (max_seq_len, check_increase_seq(max_so_far, index + 1))
-
-        return max_seq_len
-
-    return check_increase_seq(None, 0)
+    return max([ len(s) for s in dp ])
 
 def main():
     test_data = [ [7, 12, 3, 8, 9, 4, 5, 6 ] ]
