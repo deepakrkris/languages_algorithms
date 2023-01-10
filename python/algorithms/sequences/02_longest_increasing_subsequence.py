@@ -18,19 +18,28 @@ Constraints:
 
 [ 7, 12, 3, 8, 9, 4, 5, 6 ] 
 
-
+ 
+6  4  8  5  7
+0  0  1  1  2
+   0  1  1  2
+      0  1  2 
+         1  2 
 """
 
 def longest_increasing_subsequence(sequence) :
 
     dp = [ [] ]
 
-    # dp solution
+    for i in range(len(sequence)) :
+        for seq in dp :
+            if not seq or seq[-1] < sequence[i] :
+                new_seq = seq +  [ sequence[i] ]
+                dp.append(new_seq)
 
     return max([ len(s) for s in dp ])
 
 def main():
-    test_data = [ [7, 12, 3, 8, 9, 4, 5, 6 ] ]
+    test_data = [ [7, 12, 3, 8, 9, 4, 5, 6 ] , [ 6 , 4 , 8 , 5 , 7 ] ]
 
     for i in range(len(test_data)):
         print(i+1, ". \t Input data: ", test_data[i], sep="")
