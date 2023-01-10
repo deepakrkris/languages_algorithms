@@ -28,13 +28,20 @@ Constraints:
 
 def longest_increasing_subsequence(sequence) :
 
-    dp = [ [] ]
+    dp = [ ]
 
-    for i in range(len(sequence)) :
+    for num in sequence :
+   
+        longest_seq_until_i = [ num ]
+
         for seq in dp :
-            if not seq or seq[-1] < sequence[i] :
-                new_seq = seq +  [ sequence[i] ]
-                dp.append(new_seq)
+            if seq[-1] < num :
+                new_seq = seq +  [ num ]
+
+                if len(longest_seq_until_i) < len(new_seq) :
+                    longest_seq_until_i = new_seq
+
+        dp.append(longest_seq_until_i)
 
     return max([ len(s) for s in dp ])
 
