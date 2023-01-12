@@ -7,7 +7,8 @@ int main() {
 
     std::string s;
     cout << endl << " ** input string to count characters : ";
-    getline(cin, s);
+    // getline(cin, s);
+    s = "place holder for commented line ";
     int count = 0;
 
     for (char c : s) {
