@@ -61,5 +61,3 @@ it = Iterator([ 0, [  [ 1 , 2, 3 ] ] , 4 ])
 while it.has_next() :
     print(it.next())
 """
-
-
