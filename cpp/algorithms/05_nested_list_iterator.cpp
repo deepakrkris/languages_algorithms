@@ -12,93 +12,99 @@
 
 using namespace std;
 
+class NestedList;
+
 struct Element {
-    virtual bool isInteger() = 0;
+    union {
+        int integer;
+        NestedList* list;
+    } element;
+    bool isInteger;
 };
 
-struct IntElement : public Element {
-    int num;
+class NestedList {
+  private:
+    vector<Element> elements;
 
-    bool isInteger() {
-        return true;
+  public:
+    NestedList() {}
+    void push_back(int value) {
+        elements.push_back({ value, true });        
     }
-};
 
-struct NestedList : public Element {
-    vector<Element*> list;
+    Element push_back(NestedList& list) {
+        Element e;
+        e.isInteger = false;
+        e.element.list = &list;
+        elements.push_back(e);
+        return e;
+    }
 
-    bool isInteger() {
-        return false;
+    int getInteger(int index) {
+        if (elements[index].isInteger) {
+            return elements[index].element.integer;
+        }
+        throw std::runtime_error("Element is not an integer");
     }
 
     int size() {
-        return list.size();
+        return elements.size();
     }
 
-    void push_back(Element *e) {
-        list.push_back(e);
+    Element get(int index) {
+        return elements[index];
     }
 
-    void push_back(int a) {
-        IntElement e;
-        e.num = a;
-        list.push_back(&e);
-    }
-
-    NestedList push_back(vector<int> lst = {}) {
-        NestedList element_list;
-        for (auto i : lst) {
-            IntElement e;
-            e.num = i;
-            element_list.push_back(&e);
+    NestedList* getList(int index) {
+        if (!elements[index].isInteger) {
+            return elements[index].element.list;
         }
-        list.push_back(&element_list);
-        return element_list;
-    }
-
-    void push_back(NestedList *lst) {
-        list.push_back(lst);   
+        throw std::runtime_error("Element is not a list");
     }
 };
 
 class Iterator {
     NestedList list;
-    stack<Element*> stack;
+    stack<Element> it;
 
     public:
     Iterator(NestedList& params) : list(params) {
-        auto vec_of_num = list.list;
-        for(auto it = vec_of_num.rbegin(); it != vec_of_num.rend(); it++) {
-            stack.push(*it);
+        for (int i = list.size() - 1; i >= 0; i--) {
+            it.push(list.get(i));
         }
     }
 
     bool has_next() {
-        if (stack.size() > 0) {
+        if (it.size() > 0) {
             return true;
         }
         return false;
     }
 
     int next() {
-        while (stack.size() > 0 && !stack.top()->isInteger()) {
-            NestedList *e = static_cast<NestedList*>(stack.top());
-            stack.pop();
-            auto vec_of_num = e->list;
-            for(auto it = vec_of_num.rbegin(); it != vec_of_num.rend(); it++) {
-                stack.push(*it);
+        while (it.size() > 0 && !it.top().isInteger) {
+            auto list = *it.top().element.list;
+            it.pop();
+            for (int i = list.size() - 1; i >= 0; i--) {
+                it.push(list.get(i));
             }
         }
-        if (has_next()) {
-            IntElement* intE = static_cast<IntElement*>(stack.top());
-            return intE->num;
+        if (it.size() > 0) {
+            auto e = it.top().element.integer;
+            it.pop();
+            return e;
         }
         return -1;
     } 
 };
 
 NestedList add_nesting(NestedList& lst, vector<int> inner_list) {
-    return lst.push_back(inner_list);
+    NestedList new_lst;
+    for_each(inner_list.begin(), inner_list.end(), [&new_lst](int& i) {
+        new_lst.push_back(i);
+    });
+    lst.push_back(new_lst);
+    return new_lst;
 }
 
 int main() {
@@ -112,6 +118,10 @@ int main() {
     NestedList list3 = add_nesting(list2, {6, 7});
     NestedList list4 = add_nesting(list3, {9});
 
+    root_list.push_back(98); 
+    list2.push_back(99);
+    list3.push_back(100);
+
     cout << " size of root " << root_list.size() << endl;
     cout << " size of list2 " << list2.size() << endl;
     cout << " size of list3 " << list3.size() << endl;
@@ -119,6 +129,8 @@ int main() {
 
     Iterator it(root_list);
     while(it.has_next()) {
-        cout << it.next() << endl;
+        cout << it.next() << " ,  ";
     }
+
+    cout << endl;
 }
