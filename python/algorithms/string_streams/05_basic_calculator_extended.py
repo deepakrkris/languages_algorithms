@@ -11,51 +11,51 @@ should be able to handle the “+” and “-” operators, as well as “()” 
 
 def calculator(expression) :
     operation_stack = []
-    accumulator = 0
+    operand_stack = []
     operand = 0
-    op_multiply = False
     sign = 1
 
     for c in expression :
         if c.isdigit() :
             operand = operand * 10 + int(c)
         elif c == "+" :
-            if op_multiply :
-                accumulator *= operand * sign
-                sign *= 1
-                operand = 0
-                op_multiply = False
-            else :
-                operation_stack.append(accumulator)
+            if operation_stack and operation_stack[-1] == '*' :
+                operand_stack.append(operand * sign)
                 sign = 1
-                accumulator = operand
                 operand = 0
+            while operation_stack and operation_stack[-1] == '*' :
+                print(operation_stack, operand_stack)
+                operation_stack.pop()
+                operand1 = operand_stack.pop()
+                operand2 = operand_stack.pop()
+                operand_stack.append(operand1 * operand2)
+            operand_stack.append(operand)
+            operand = 0
         elif c == '*' :
-            if op_multiply :
-                accumulator *= operand * sign
-                sign = 1
-                operand = 0
-            else :
-                operation_stack.append(accumulator)
-                sign = 1
-                accumulator = operand
-                operand = 0
-            op_multiply = True
+            operation_stack.append('*')
+            operand_stack.append(operand * sign)
+            sign = 1
+            operand = 0
         elif c == "-" :
             sign = sign * -1
 
-    if op_multiply :
-        accumulator *= operand * sign
-        operation_stack.append(accumulator)
-    else :
-        accumulator += operand * sign
-        operation_stack.append(accumulator)
+    if operation_stack and operation_stack[-1] == '*' :
+        operand_stack.append(operand * sign)
+        sign = 1
+        operand = 0
 
-    print(operation_stack)
-    return sum(operation_stack)
+    while operation_stack and operation_stack[-1] == '*' :
+        operation_stack.pop()
+        operand1 = operand_stack.pop()
+        operand2 = operand_stack.pop()
+        operand_stack.append(operand1 * operand2)
+
+    operand_stack.append(operand * sign)
+    return sum(operand_stack)
 
 def main():
     input = (
+             "1+2",
              "1+2*32",
              "1+2*16*2",
              "1+2*16*2+1",
